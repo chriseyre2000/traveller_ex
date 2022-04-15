@@ -29,7 +29,7 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec commission_threshold(atom | %{endurance: any}) :: 4 | 5
+  @spec commission_threshold(TravellerEx.Character.t()) :: 4 | 5
   def commission_threshold(%TravellerEx.Character{} = character) do
     value = 5
     if (character.endurance >= 7) do
@@ -39,6 +39,21 @@ defmodule TravellerEx.Profession.Army do
     end
   end
 
+  @impl TravellerEx.Profession
+  @spec promotion_threshold(TravellerEx.Character.t()) :: 5 | 6
+  def promotion_threshold(%TravellerEx.Character{} = character) do
+    value = 6
+    if character.education >= 7 do
+      value - 1
+    else
+      value
+    end
+  end
 
+  @impl TravellerEx.Profession
+  @spec reenlist_threshold(TravellerEx.Character.t()) :: 7
+  def reenlist_threshold(%TravellerEx.Character{}) do
+    7
+  end
 
 end

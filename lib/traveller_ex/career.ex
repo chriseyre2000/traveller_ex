@@ -27,4 +27,23 @@ defmodule TravellerEx.Career do
       :failed
     end
   end
+
+  def gain_promotion(character = %TravellerEx.Character{}, profession) do
+    threshold = profession.promotion_threshold(character)
+    if TravellerEx.dice(2) >= threshold do
+      :ok
+    else
+      :failed
+    end
+  end
+
+  def reenlist(character = %TravellerEx.Character{}, profession) do
+    threshold = profession.reenlist_threshold(character)
+    roll = TravellerEx.dice(2)
+    cond do
+      roll == 12 -> :madantory_reenlist
+      roll >= threshold -> :may_reenlist
+      true -> :muster_out
+    end
+  end
 end

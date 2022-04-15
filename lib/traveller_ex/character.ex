@@ -7,7 +7,6 @@ defmodule TravellerEx.Character do
     intelligence: integer,
     education: integer,
     social_standing: integer,
-    age: integer,
     rank: nil | integer
   }
 
