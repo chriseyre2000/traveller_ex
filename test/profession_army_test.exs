@@ -80,4 +80,29 @@ defmodule TravellerEx.ProfessionArmyTest do
       :muster_out == TravellerEx.Career.reenlist(TravellerEx.Character.random(), TravellerEx.Profession.Army)
     end)
   end
+
+  test "Can gain a skill" do
+    character = TravellerEx.Character.from_upp("222222")
+    add_skill = TravellerEx.Profession.Skills.increment_skill(:gambling)
+    character = add_skill.(character)
+    assert character.skills.gambling == 1
+    character = add_skill.(character)
+    assert character.skills.gambling == 2
+  end
+
+  for attr <- [
+  :strength,
+  :dexterity,
+  :endurance,
+  :intelligence,
+  :education,
+  :social_standing,
+ ] do
+    test "Can improve #{attr}" do
+      character = TravellerEx.Character.from_upp("222222")
+      improve_attribute = TravellerEx.Profession.Skills.increment_attribute(unquote(attr))
+      character = improve_attribute.(character)
+      assert character |> Map.get(unquote(attr)) == 3
+    end
+  end
 end

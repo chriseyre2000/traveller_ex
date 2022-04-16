@@ -1,5 +1,6 @@
 defmodule TravellerEx.Profession.Army do
   @behaviour TravellerEx.Profession
+  import TravellerEx.Profession.Skills
 
   @impl TravellerEx.Profession
   @spec enlist_threshold(TravellerEx.Character.t()) :: 2 | 3 | 4 | 5
@@ -56,4 +57,56 @@ defmodule TravellerEx.Profession.Army do
     7
   end
 
+  @impl TravellerEx.Profession
+  @spec personal_development(TravellerEx.Character.t()) :: (TravellerEx.Character.t() -> TravellerEx.Character.t())
+  def personal_development(%TravellerEx.Character{}) do
+    [
+      increment_attribute(:strength),
+      increment_attribute(:dexterity),
+      increment_attribute(:endurance),
+      increment_skill(:gambling),
+      fn character -> %{character | education: character.education + 1} end,
+      increment_skill(:brawling),
+    ] |> Enum.random()
+  end
+
+  @impl TravellerEx.Profession
+  @spec service_skills(TravellerEx.Character.t()) :: (TravellerEx.Character.t() -> TravellerEx.Character.t())
+  def service_skills(%TravellerEx.Character{}) do
+    [
+      increment_skill(:vehicle),
+      increment_skill(:air_raft),
+      increment_skill(:gun_combat),
+      increment_skill(:fwd_observer),
+      increment_skill(:blade_combat),
+      increment_skill(:gun_combat),
+    ]
+    |> Enum.random()
+  end
+
+  @impl TravellerEx.Profession
+  @spec advanced_education(TravellerEx.Character.t()) :: (TravellerEx.Character.t() -> TravellerEx.Character.t())
+  def advanced_education(%TravellerEx.Character{education: education}) when education >= 8 do
+    [
+      increment_skill(:vehicle),
+      increment_skill(:tactics),
+      increment_skill(:tactics),
+      increment_skill(:computer),
+      increment_skill(:leader),
+      increment_skill(:admin),
+    ]
+    |> Enum.random()
+  end
+
+  def advanced_education(%TravellerEx.Character{}) do
+    [
+      increment_skill(:vehicle),
+      increment_skill(:mechanical),
+      increment_skill(:electronic),
+      increment_skill(:tactics),
+      increment_skill(:blade_combat),
+      increment_skill(:gun_combat),
+    ]
+    |> Enum.random()
+  end
 end

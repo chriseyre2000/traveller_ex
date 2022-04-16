@@ -18,11 +18,11 @@ defmodule TravellerEx.Character do
             social_standing: 7,
             age: 18,
             rank: nil,
-            skills: []
+            skills: %{}
 
   @spec new :: TravellerEx.Character.t()
   def new do
-    %__MODULE__{}
+    %__MODULE__{age: 18, skills: %{}}
   end
 
   @spec random :: TravellerEx.Character.t()
