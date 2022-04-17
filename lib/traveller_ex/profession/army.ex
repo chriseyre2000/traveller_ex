@@ -3,7 +3,6 @@ defmodule TravellerEx.Profession.Army do
   import TravellerEx.Profession.Skills
 
   @impl TravellerEx.Profession
-  @spec enlist_threshold(TravellerEx.Character.t()) :: 2 | 3 | 4 | 5
   def enlist_threshold(%TravellerEx.Character{} = character) do
     value = 5
     value = if character.dexterity >= 6 do
@@ -19,7 +18,6 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec survive_threshold(TravellerEx.Character.t()) :: 3 | 5
   def survive_threshold(%TravellerEx.Character{} = character) do
     value = 5
     if character.education >= 6 do
@@ -30,7 +28,6 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec commission_threshold(TravellerEx.Character.t()) :: 4 | 5
   def commission_threshold(%TravellerEx.Character{} = character) do
     value = 5
     if (character.endurance >= 7) do
@@ -41,7 +38,6 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec promotion_threshold(TravellerEx.Character.t()) :: 5 | 6
   def promotion_threshold(%TravellerEx.Character{} = character) do
     value = 6
     if character.education >= 7 do
@@ -52,13 +48,11 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec reenlist_threshold(TravellerEx.Character.t()) :: 7
   def reenlist_threshold(%TravellerEx.Character{}) do
     7
   end
 
   @impl TravellerEx.Profession
-  @spec personal_development(TravellerEx.Character.t()) :: (TravellerEx.Character.t() -> TravellerEx.Character.t())
   def personal_development(%TravellerEx.Character{}) do
     [
       increment_attribute(:strength),
@@ -71,7 +65,6 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec service_skills(TravellerEx.Character.t()) :: (TravellerEx.Character.t() -> TravellerEx.Character.t())
   def service_skills(%TravellerEx.Character{}) do
     [
       increment_skill(:vehicle),
@@ -85,7 +78,6 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec advanced_education(TravellerEx.Character.t()) :: (TravellerEx.Character.t() -> TravellerEx.Character.t())
   def advanced_education(%TravellerEx.Character{education: education}) when education >= 8 do
     [
       increment_skill(:vehicle),
@@ -111,7 +103,6 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec base_skills(TravellerEx.Character.t()) :: TravellerEx.Character.t()
   def base_skills(character = %TravellerEx.Character{}) do
     increment_skill(:rifle).(character)
   end
@@ -125,7 +116,6 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec benefits(TravellerEx.Character.t()) :: TravellerEx.Character.t()
   def benefits(character = %TravellerEx.Character{}) do
     benefit_list = [
       add_item(:low_passage),
@@ -148,7 +138,6 @@ defmodule TravellerEx.Profession.Army do
   end
 
   @impl TravellerEx.Profession
-  @spec cash_benefits(TravellerEx.Character.t()) :: TravellerEx.Character.t()
   def cash_benefits(character = %TravellerEx.Character{}) do
     amounts = [
       2_000,
