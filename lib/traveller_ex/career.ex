@@ -1,6 +1,9 @@
 defmodule TravellerEx.Career do
 
-  @profession_map %{army: TravellerEx.Profession.Army}
+  @profession_map %{
+    army: TravellerEx.Profession.Army,
+    navy: TravellerEx.Profession.Navy,
+  }
 
   @spec enlist(TravellerEx.Character.t(), atom) :: :draft | :ok
   def enlist(character = %TravellerEx.Character{}, profession) do
@@ -63,7 +66,7 @@ defmodule TravellerEx.Career do
     character = if :ok == enlist(character, profession) do
       character |> Map.replace(:profession, prefered_service)
     else
-      character |> Map.replace(:profession, [:army] |> Enum.random())
+      character |> Map.replace(:profession, [:army, :navy] |> Enum.random())
     end
 
     profession = @profession_map |> Map.get(character.profession)

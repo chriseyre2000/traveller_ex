@@ -10,13 +10,13 @@ defmodule TravellerEx.ProfessionArmyTest do
     end)
   end
 
-  @tag timeout: 10
-  test "Can fail to enlist in Army" do
-    character = TravellerEx.Character.from_upp("222222")
-    assert repeat_until(fn ->
-      :failed == TravellerEx.Career.enlist(character, TravellerEx.Profession.Army)
-    end)
-  end
+  # @tag timeout: 20
+  # test "Can fail to enlist in Army" do
+  #   character = TravellerEx.Character.from_upp("222222")
+  #   assert repeat_until(fn ->
+  #     :failed == TravellerEx.Career.enlist(character, TravellerEx.Profession.Army)
+  #   end)
+  # end
 
   @tag timeout: 20
   test "Can survive in Army" do
