@@ -1,21 +1,14 @@
 # TravellerEx
 
-**TODO: Add description**
+This is a utility to assist the generation of Traveller characters and eventually planets.
 
-## Installation
+So far I can randomly generate Army characters.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `traveller_ex` to your list of dependencies in `mix.exs`:
+TODO:
+- Print the character summary
+- Handle the specialised skills (gun combat, blade combat, and vehicles )
+  Planning to use a random selection (prioritise weapons that the character gets a bonus for,
+  50% enhance same vs random choice)
 
-```elixir
-def deps do
-  [
-    {:traveller_ex, "~> 0.1.0"}
-  ]
-end
-```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/traveller_ex>.
 

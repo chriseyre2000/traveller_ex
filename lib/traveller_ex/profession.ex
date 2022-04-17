@@ -29,5 +29,11 @@ defprotocol TravellerEx.Profession do
   @spec promotion_skills(TravellerEx.Character.t(), nil | pos_integer(), nil | pos_integer()) :: TravellerEx.Character.t()
   def promotion_skills(character, from, to)
 
+  @spec benefits(TravellerEx.Character.t()) :: (TravellerEx.Character.t() -> TravellerEx.Character.t())
+  def benefits(character)
+
+  @spec cash_benefits(TravellerEx.Character.t()) :: TravellerEx.Character.t()
+  def cash_benefits(character)
+
 end
 

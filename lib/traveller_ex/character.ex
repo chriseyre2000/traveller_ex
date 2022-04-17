@@ -7,7 +7,11 @@ defmodule TravellerEx.Character do
     intelligence: integer,
     education: integer,
     social_standing: integer,
-    rank: nil | integer
+    rank: nil | integer,
+    skills: map,
+    credits: integer,
+    possessions: [],
+    profession: :nil
   }
 
   defstruct strength: 7,
@@ -18,7 +22,10 @@ defmodule TravellerEx.Character do
             social_standing: 7,
             age: 18,
             rank: nil,
-            skills: %{}
+            skills: %{},
+            credits: 0,
+            possessions: [],
+            profession: :nil
 
   @spec new :: TravellerEx.Character.t()
   def new do

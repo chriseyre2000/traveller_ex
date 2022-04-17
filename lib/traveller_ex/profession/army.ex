@@ -124,6 +124,50 @@ defmodule TravellerEx.Profession.Army do
     character
   end
 
+  @impl TravellerEx.Profession
+  @spec benefits(TravellerEx.Character.t()) :: TravellerEx.Character.t()
+  def benefits(character = %TravellerEx.Character{}) do
+    benefit_list = [
+      add_item(:low_passage),
+      increment_attribute(:intelligence, 1),
+      increment_attribute(:education, 2),
+      add_item(:gun),
+      add_item(:high_passage),
+      add_item(:middle_passage),
+      increment_attribute(:social_standing, 1),
+    ]
+
+    bonus = if 5 >= character.rank do
+      benefit_list |> Enum.drop(1)
+    else
+      benefit_list |> Enum.drop(-1)
+    end
+    |> Enum.random()
+
+    bonus.(character)
+  end
+
+  @impl TravellerEx.Profession
+  @spec cash_benefits(TravellerEx.Character.t()) :: TravellerEx.Character.t()
+  def cash_benefits(character = %TravellerEx.Character{}) do
+    amounts = [
+      2_000,
+      5_000,
+      10_000,
+      10_000,
+      10_000,
+      20_000,
+      30_000
+    ]
+
+    amount = if character.skills |> Map.has_key?(:gambling) do
+      amounts |> Enum.drop(1)
+    else
+      amounts |> Enum.take(6)
+    end |> Enum.random()
+
+    %TravellerEx.Character{character| credits: character.credits + amount}
+  end
 
   def rank(character= %TravellerEx.Character{}) do
     case character.rank do

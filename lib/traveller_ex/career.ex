@@ -1,11 +1,14 @@
 defmodule TravellerEx.Career do
-  @spec enlist(TravellerEx.Character.t(), atom) :: :failed | :ok
+
+  @profession_map %{army: TravellerEx.Profession.Army}
+
+  @spec enlist(TravellerEx.Character.t(), atom) :: :draft | :ok
   def enlist(character = %TravellerEx.Character{}, profession) do
     threshold = profession.enlist_threshold(character)
     if TravellerEx.dice(2) >= threshold do
       :ok
     else
-      :failed
+      :draft
     end
   end
 
@@ -52,16 +55,18 @@ defmodule TravellerEx.Career do
   end
 
   @spec generate(any, any) :: any
-  def generate(target_terms, _prefered_service) do
+  def generate(target_terms, prefered_service) do
     character = TravellerEx.Character.random()
 
-    profession = TravellerEx.Profession.Army
+    profession = @profession_map |> Map.get(prefered_service)
 
-    enlist(character, profession)
-    |> case do
-      :ok -> IO.puts "In the army now"
-      :failed -> IO.puts "To the draft, army for now"
+    character = if :ok == enlist(character, profession) do
+      character |> Map.replace(:profession, prefered_service)
+    else
+      character |> Map.replace(:profession, [:army] |> Enum.random())
     end
+
+    profession = @profession_map |> Map.get(character.profession)
 
     character = character
       |> profession.base_skills()
@@ -79,8 +84,6 @@ defmodule TravellerEx.Career do
           |> increase_age()
           |> aging()
 
-        # Special skills at end of term
-
         reenlist(character, profession)
         |> case do
           :madantory_reenlist -> {:cont, {character, remaining_terms}}
@@ -93,6 +96,28 @@ defmodule TravellerEx.Career do
           :muster_out -> {:halt, {character, 0}}
         end
       end)
+
+    # benefits
+    num = number_of_benefits(character)
+
+    {character, _} = Enum.reduce(1..num, {character, 0}, fn _, {character, times_cash_taken} ->
+
+      benefit_type = if times_cash_taken == 3 do
+        :benefit
+      else
+        [:benefit, :cash] |> Enum.random()
+      end
+
+      times_cash_taken = if benefit_type == :cash, do: times_cash_taken + 1, else: times_cash_taken
+
+      character = if benefit_type == :cash do
+        profession.cash_benefits(character)
+      else
+        profession.benefits(character)
+      end
+
+      {character, times_cash_taken}
+    end)
 
     character
   end
@@ -124,7 +149,10 @@ defmodule TravellerEx.Career do
     if character.rank != nil do
       if gain_promotion(character, profession) == :ok do
         character
-        |> Map.update!(:rank, & (&1 + 1))
+        |> Map.update!(:rank, fn
+          6 -> 6
+          rank -> rank + 1
+        end)
         |> profession.promotion_skills(prev_rank, character.rank)
         |> add_skill(profession)
       else
@@ -181,5 +209,20 @@ defmodule TravellerEx.Career do
       profession.advanced_education(character)
     ] |> Enum.random()
     skill.(character)
+  end
+
+  defp number_of_benefits(character= %TravellerEx.Character{}) do
+    terms = div(character.age - 18, 4)
+    rank_bonus = case character.rank do
+      1 -> 1
+      2 -> 1
+      3 -> 2
+      4 -> 2
+      5 -> 3
+      6 -> 3
+      _ -> 0
+    end
+
+    terms + rank_bonus
   end
 end
