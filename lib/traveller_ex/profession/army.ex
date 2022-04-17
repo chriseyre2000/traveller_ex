@@ -109,4 +109,31 @@ defmodule TravellerEx.Profession.Army do
     ]
     |> Enum.random()
   end
+
+  @impl TravellerEx.Profession
+  @spec base_skills(TravellerEx.Character.t()) :: TravellerEx.Character.t()
+  def base_skills(character = %TravellerEx.Character{}) do
+    increment_skill(:rifle).(character)
+  end
+
+  @impl TravellerEx.Profession
+  def promotion_skills(character, nil, 1) do
+    increment_skill(:smg).(character)
+  end
+  def promotion_skills(character, _from, _to) do
+    character
+  end
+
+
+  def rank(character= %TravellerEx.Character{}) do
+    case character.rank do
+      1 -> "Lietenant"
+      2 -> "Captain"
+      3 -> "Major"
+      4 -> "Lt Colonel"
+      5 -> "Colonel"
+      6 -> "General"
+      _ -> "Private"
+    end
+  end
 end

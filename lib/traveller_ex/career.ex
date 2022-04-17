@@ -19,6 +19,7 @@ defmodule TravellerEx.Career do
     end
   end
 
+  @spec gain_commission(TravellerEx.Character.t(), atom) :: :failed | :ok
   def gain_commission(character = %TravellerEx.Character{}, profession) do
     threshold = profession.commission_threshold(character)
     if TravellerEx.dice(2) >= threshold do
@@ -28,6 +29,7 @@ defmodule TravellerEx.Career do
     end
   end
 
+  @spec gain_promotion(TravellerEx.Character.t(), atom) :: :failed | :ok
   def gain_promotion(character = %TravellerEx.Character{}, profession) do
     threshold = profession.promotion_threshold(character)
     if TravellerEx.dice(2) >= threshold do
@@ -37,6 +39,8 @@ defmodule TravellerEx.Career do
     end
   end
 
+  @spec reenlist(TravellerEx.Character.t(), atom) ::
+          :madantory_reenlist | :may_reenlist | :muster_out
   def reenlist(character = %TravellerEx.Character{}, profession) do
     threshold = profession.reenlist_threshold(character)
     roll = TravellerEx.dice(2)
@@ -47,6 +51,7 @@ defmodule TravellerEx.Career do
     end
   end
 
+  @spec generate(any, any) :: any
   def generate(target_terms, _prefered_service) do
     character = TravellerEx.Character.random()
 
@@ -58,49 +63,21 @@ defmodule TravellerEx.Career do
       :failed -> IO.puts "To the draft, army for now"
     end
 
+    character = character
+      |> profession.base_skills()
+
     {character, _} = Stream.cycle([1])
       |> Enum.reduce_while({character, target_terms}, fn _term, {character, remaining_terms} ->
         if survive(character, profession) == :died do
           throw "You are dead"
-        else
-          IO.puts "You lived"
         end
 
-        character = if (character.age == 18) do
-          IO.puts "Initial 2 skills"
-          character = add_skill(character, profession)
-          add_skill(character, profession)
-        else
-          add_skill(character, profession)
-        end
-
-        character = if character.rank == nil do
-          if gain_commission(character, profession) == :ok do
-            IO.puts "Initial commission"
-            character = character |> Map.put(:rank, 1)
-            add_skill(character, profession)
-          else
-            character
-          end
-        else
-          character
-        end
-
-        character = if character.rank != nil do
-          if gain_promotion(character, profession) == :ok do
-            IO.puts "Promoted"
-            character = character |> Map.update!(:rank, & (&1 + 1))
-            add_skill(character, profession)
-          else
-            character
-          end
-        else
-          character
-        end
-
-        character = %TravellerEx.Character{character | age: character.age + 4}
-
-        # Apply aging rules
+        character = character
+          |> training(profession)
+          |> commission(profession)
+          |> promotion(profession)
+          |> increase_age()
+          |> aging()
 
         # Special skills at end of term
 
@@ -117,9 +94,83 @@ defmodule TravellerEx.Career do
         end
       end)
 
-
-
     character
+  end
+
+  defp training(character, profession) do
+    if (character.age == 18) do
+      character = add_skill(character, profession)
+      add_skill(character, profession)
+    else
+      add_skill(character, profession)
+    end
+  end
+
+  defp commission(character, profession) do
+    if character.rank == nil do
+      if gain_commission(character, profession) == :ok do
+        character = character |> Map.put(:rank, 1)
+        add_skill(character, profession)
+      else
+        character
+      end
+    else
+      character
+    end
+  end
+
+  defp promotion(character, profession) do
+    prev_rank = character.rank
+    if character.rank != nil do
+      if gain_promotion(character, profession) == :ok do
+        character
+        |> Map.update!(:rank, & (&1 + 1))
+        |> profession.promotion_skills(prev_rank, character.rank)
+        |> add_skill(profession)
+      else
+        character
+      end
+    else
+      character
+    end
+  end
+
+  defp increase_age(character = %TravellerEx.Character{}) do
+    %TravellerEx.Character{character | age: character.age + 4}
+  end
+
+  defp aging(character = %TravellerEx.Character{age: age}) when age < 34 do
+    character
+  end
+
+  defp aging(character = %TravellerEx.Character{age: age}) when age < 50 do
+    character
+    |> possibly_reduce(:strength, 1, 8)
+    |> possibly_reduce(:dexterity, 1, 7)
+    |> possibly_reduce(:endurance, 1, 8)
+  end
+
+  defp aging(character = %TravellerEx.Character{age: age}) when age < 66 do
+    character
+    |> possibly_reduce(:strength, 1, 9)
+    |> possibly_reduce(:dexterity, 1, 8)
+    |> possibly_reduce(:endurance, 1, 9)
+  end
+
+  defp aging(character = %TravellerEx.Character{}) do
+    character
+    |> possibly_reduce(:strength, 2, 9)
+    |> possibly_reduce(:dexterity, 2, 8)
+    |> possibly_reduce(:endurance, 2, 9)
+    |> possibly_reduce(:intelligence, 1, 9)
+  end
+
+  defp possibly_reduce(character = %TravellerEx.Character{}, attribute, amount, save) do
+    if TravellerEx.dice(2) >= save do
+      character
+    else
+      character |> Map.update(attribute, 0, &(&1 - amount))
+    end
   end
 
   @spec add_skill(TravellerEx.Character.t(), atom) :: TravellerEx.Character.t()
