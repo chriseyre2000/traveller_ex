@@ -4,6 +4,7 @@ defmodule TravellerEx.Career do
     army: TravellerEx.Profession.Army,
     navy: TravellerEx.Profession.Navy,
     marines: TravellerEx.Profession.Marines,
+    scouts: TravellerEx.Profession.Scouts,
   }
 
   @spec enlist(TravellerEx.Character.t(), atom) :: :draft | :ok
@@ -67,7 +68,7 @@ defmodule TravellerEx.Career do
     character = if :ok == enlist(character, profession) do
       character |> Map.replace(:profession, prefered_service)
     else
-      character |> Map.replace(:profession, [:army, :navy, :marines] |> Enum.random())
+      character |> Map.replace(:profession, [:army, :navy, :marines, :scouts] |> Enum.random())
     end
 
     profession = @profession_map |> Map.get(character.profession)
@@ -127,7 +128,7 @@ defmodule TravellerEx.Career do
   end
 
   defp training(character, profession) do
-    if (character.age == 18) do
+    if (character.age == 18) or (character.profession == :scouts) do
       character = add_skill(character, profession)
       add_skill(character, profession)
     else
