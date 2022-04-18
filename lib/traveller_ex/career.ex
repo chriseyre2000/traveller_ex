@@ -54,7 +54,8 @@ defmodule TravellerEx.Career do
     threshold = profession.reenlist_threshold(character)
     roll = TravellerEx.dice(2)
     cond do
-      roll == 12 -> :madantory_reenlist
+      roll == 12 ->
+        :madantory_reenlist
       roll >= threshold -> :may_reenlist
       true -> :muster_out
     end
@@ -94,7 +95,7 @@ defmodule TravellerEx.Career do
         |> case do
           :madantory_reenlist -> {:cont, {character, remaining_terms - 1}}
           :may_reenlist ->
-            if target_terms < 1 do
+            if remaining_terms <= 1 do
               {:halt, {character, 0}}
               else
             {:cont, {character, remaining_terms - 1}}
