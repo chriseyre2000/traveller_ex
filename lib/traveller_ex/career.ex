@@ -5,7 +5,8 @@ defmodule TravellerEx.Career do
     navy: TravellerEx.Profession.Navy,
     marines: TravellerEx.Profession.Marines,
     scouts: TravellerEx.Profession.Scouts,
-    merchants: TravellerEx.Profession.Merchants
+    merchants: TravellerEx.Profession.Merchants,
+    other: TravellerEx.Profession.Other
   }
 
   @spec enlist(TravellerEx.Character.t(), atom) :: :draft | :ok
