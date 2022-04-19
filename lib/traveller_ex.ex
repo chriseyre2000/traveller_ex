@@ -19,6 +19,21 @@ defmodule TravellerEx do
   def hex_encode(n) when is_integer(n) and n in 0..9, do: "#{n}"
   def hex_encode(n) when is_integer(n) and n in 10..15, do: "#{[?A + n - 10]}"
 
+  def hex_decode(n) do
+    Integer.parse(n)
+    |> case do
+      {number, ""} -> number
+      :error -> case n do
+        "A" -> 10
+        "B" -> 11
+        "C" -> 12
+        "D" -> 13
+        "E" -> 14
+        "F" -> 15
+      end
+    end
+  end
+
   def universal_personality_profile do
     1..6
     |> Enum.reduce("", fn _, acc ->
